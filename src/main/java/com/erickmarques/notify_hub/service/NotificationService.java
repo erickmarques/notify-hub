@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -55,18 +56,27 @@ public class NotificationService {
         if (optinalChannel.isPresent()){
             return optinalChannel.get();
         } else {
-            var allChannels = channelRepository.findAll();
-
-            if (allChannels.isEmpty())
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "É preciso cadastrar os canais disponíveis!");
-
-            var validChannels = allChannels
-                                    .stream()
-                                    .map(Channel::getDescription)
-                                    .collect(Collectors.joining(", "));
-
+            var allChannels = findAllChannels();
+            var validChannels = concatenateChannels(allChannels);
             var errorMessage = String.format("O canal informado não existe! Os Canais disponíveis são (%s)", validChannels);
+
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
         }
+    }
+
+    private List<Channel> findAllChannels(){
+        var allChannels =  channelRepository.findAll();
+
+        if (allChannels.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "É preciso cadastrar os canais disponíveis!");
+
+        return allChannels;
+    }
+
+    private String concatenateChannels(List<Channel> allChannels){
+        return allChannels
+                .stream()
+                .map(Channel::getDescription)
+                .collect(Collectors.joining(", "));
     }
 }
