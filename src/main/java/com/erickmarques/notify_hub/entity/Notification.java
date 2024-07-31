@@ -1,9 +1,10 @@
 package com.erickmarques.notify_hub.entity;
 
-import com.erickmarques.notify_hub.controller.dto.NotificationResponseDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "notifications")
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Notification {
 
