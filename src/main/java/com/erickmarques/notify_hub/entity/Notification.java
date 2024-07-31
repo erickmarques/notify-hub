@@ -6,12 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "notifications")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,11 +32,10 @@ public class Notification {
 
     private String message;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @ManyToOne
     @JoinColumn(name = "channel_id")
     private Channel channel;
-
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Status status;
 }

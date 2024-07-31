@@ -22,7 +22,7 @@ public record NotificationResponseDto (UUID id,
                 .destination(notification.getDestination())
                 .message(notification.getMessage())
                 .channel(notification.getChannel().getDescription())
-                .status(notification.getStatus().getDescription())
+                .status(notification.getStatus().toString())
                 .build();
     }
 }

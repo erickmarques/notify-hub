@@ -2,7 +2,7 @@ package com.erickmarques.notify_hub.controller.dto;
 
 import com.erickmarques.notify_hub.entity.Channel;
 import com.erickmarques.notify_hub.entity.Notification;
-
+import com.erickmarques.notify_hub.entity.Status;
 
 
 public record CreateNotificationDto (String destination,
@@ -14,7 +14,7 @@ public record CreateNotificationDto (String destination,
                 .builder()
                 .destination(destination)
                 .message(message)
-                .status(null)
+                .status(Status.SCHEDULED)
                 .channel(channel)
                 .build();
     }

@@ -30,13 +30,21 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public NotificationResponseDto findById(String id){
         var notification =  notificationRepository
-                                .findById(UUID.fromString(id))
+                                .findById(stringToUUID(id))
                                 .orElseThrow(() ->
                                         new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND,
                                                 "Não existe notificação para o ID informado!"));
 
         return NotificationResponseDto.toDto(notification);
+    }
+
+    private UUID stringToUUID(String id){
+        try {
+            return UUID.fromString(id);
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,  "Favor informar um ID válido!");
+        }
     }
 
     @Transactional(readOnly = true)
