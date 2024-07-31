@@ -10,14 +10,11 @@ import java.util.UUID;
 
 public class NotificationFactory {
 
-    private static final String DESTINATION = "MARQUES.ERICK@OUTLOOK.COM";
-    private static final String MESSAGE = "MENSAGEM DE TESTE";
-
     public static Notification createNotificationDefault(Channel channel){
         return Notification.builder()
                 .id(UUID.randomUUID())
-                .destination(DESTINATION)
-                .message(MESSAGE)
+                .destination(Constants.DESTINATION)
+                .message(Constants.MESSAGE)
                 .status(Status.SCHEDULED)
                 .channel(channel)
                 .build();

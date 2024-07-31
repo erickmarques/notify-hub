@@ -6,13 +6,10 @@ import java.util.List;
 
 public class ChannelFactory {
 
-    private static Long ID = 1l;
-    public static String DESCRIPTION = "EMAIL";
-
     public static Channel createChannelDefault(){
         return Channel.builder()
-                    .id(ID)
-                    .description(DESCRIPTION)
+                    .id(Constants.ID)
+                    .description(Constants.CHANNEL_DESCRIPTION)
                     .build();
     }
     public static List<Channel> createListChannelDefault(){

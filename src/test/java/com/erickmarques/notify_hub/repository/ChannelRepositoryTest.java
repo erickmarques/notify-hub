@@ -2,6 +2,7 @@ package com.erickmarques.notify_hub.repository;
 
 import com.erickmarques.notify_hub.entity.Channel;
 import com.erickmarques.notify_hub.factory.ChannelFactory;
+import com.erickmarques.notify_hub.factory.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ class ChannelRepositoryTest {
     void shouldReturnChannel_WhenFindByDescription() {
 
         // Arrange
-        var description = ChannelFactory.DESCRIPTION;
+        var description = Constants.CHANNEL_DESCRIPTION;
 
         // Act
         var result = channelRepository.findByDescription(description);

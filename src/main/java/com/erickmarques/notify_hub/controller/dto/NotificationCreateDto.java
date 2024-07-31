@@ -4,8 +4,9 @@ import com.erickmarques.notify_hub.entity.Channel;
 import com.erickmarques.notify_hub.entity.Notification;
 import com.erickmarques.notify_hub.entity.Status;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 
-
+@Builder
 public record NotificationCreateDto(@NotBlank(message = "Favor informar o destino!") String destination,
                                     @NotBlank(message = "Favor informar a mensagem!") String message,
                                     @NotBlank(message = "Favor informar o canal!") String channel){
