@@ -19,16 +19,14 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final ChannelRepository channelRepository;
+    private final ChannelService channelService;
     private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
     private final Map<String, NotificationStrategy> mapStrategy = Map.of(
             "INSTAGRAM", new InstagramNotificationStrategy(),
@@ -39,8 +37,8 @@ public class NotificationService {
 
     @Transactional
     public String create(NotificationCreateDto NotificationcreateDto){
-        var channel = getChannel(NotificationcreateDto.channel());
-        validateChannel(channel);
+        var channel = channelService.findByDescription(NotificationcreateDto.channel());
+        channelService.validateChannels(channel);
 
         var notification = notificationRepository.save(NotificationcreateDto.toNotification(channel.get()));
         return notification.getId().toString();
@@ -58,43 +56,12 @@ public class NotificationService {
         return NotificationResponseDto.toDto(notification);
     }
 
-    @Transactional(readOnly = true)
-    private Optional<Channel> getChannel(String description){
-        return channelRepository.findByDescription(description);
-    }
-
-    private void validateChannel(Optional<Channel> channel) {
-        if (channel.isEmpty()){
-            var allChannels = findAllChannels();
-            var validChannels = concatenateChannels(allChannels);
-            var errorMessage = String.format("O canal informado não existe! Os Canais disponíveis são (%s)", validChannels);
-
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
-        }
-    }
-
-    @Transactional(readOnly = true)
-    private List<Channel> findAllChannels(){
-        return channelRepository.findAll();
-    }
-
     private UUID stringToUUID(String id){
         try {
             return UUID.fromString(id);
         } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,  "Favor informar um ID válido!");
         }
-    }
-
-    private String concatenateChannels(List<Channel> allChannels){
-
-        if (allChannels.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "É preciso cadastrar os canais disponíveis!");
-
-        return allChannels
-                .stream()
-                .map(Channel::getDescription)
-                .collect(Collectors.joining(", "));
     }
 
     public void checkAndSend(LocalDateTime dateTime) {
@@ -108,7 +75,6 @@ public class NotificationService {
 
         Status status = null;
         try {
-
             logger.info("Enviando para plataforma {}", notification.getChannel().getDescription());
 
             mapStrategy.get(notification.getChannel().getDescription())
@@ -121,15 +87,14 @@ public class NotificationService {
             status = Status.ERROR;
         }
 
-        setStatus(notification, status);
+        updateNotificationStatus(notification, status);
     }
 
     @Transactional
-    private void setStatus(Notification notification, Status status){
-
+    private void updateNotificationStatus(Notification notification, Status status){
         logger.info("Atualizando status com {}", status.toString());
-        notification.setStatus(status);
 
+        notification.setStatus(status);
         notificationRepository.save(notification);
     }
 }
