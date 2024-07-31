@@ -23,7 +23,7 @@ public class NotificationService {
 
     @Transactional
     public String create(CreateNotificationDto createNotificationDto){
-        var channel = getChannell(createNotificationDto.channel());
+        var channel = getChannel(createNotificationDto.channel());
         var notification = notificationRepository.save(createNotificationDto.toNotification(channel));
         return notification.getId().toString();
     }
@@ -49,7 +49,7 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    private Channel getChannell(String description){
+    private Channel getChannel(String description){
         var optinalChannel = channelRepository.findByDescription(description);
 
         if (optinalChannel.isPresent()){
