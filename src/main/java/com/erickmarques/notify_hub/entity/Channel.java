@@ -15,5 +15,7 @@ import lombok.NoArgsConstructor;
 public class Channel {
     @Id
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private String description;
 }

@@ -25,20 +25,22 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "date_time")
+    @Column(name = "date_time", nullable = false)
     @CreatedDate
     private LocalDateTime dateTime;
 
+    @Column(nullable = false)
     private String destination;
 
+    @Column(nullable = false)
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Setter
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "channel_id")
+    @JoinColumn(name = "channel_id", nullable = false)
     private Channel channel;
 }

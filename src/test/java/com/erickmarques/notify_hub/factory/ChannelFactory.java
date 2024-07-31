@@ -7,7 +7,7 @@ import java.util.List;
 public class ChannelFactory {
 
     private static Long ID = 1l;
-    private static String DESCRIPTION = "EMAIL";
+    public static String DESCRIPTION = "EMAIL";
 
     public static Channel createChannelDefault(){
         return Channel.builder()

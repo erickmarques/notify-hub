@@ -16,6 +16,9 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Classe de teste para {@link NotificationRepository}.
+ */
 @DataJpaTest
 @ActiveProfiles("test")
 class NotificationRepositoryTest {
