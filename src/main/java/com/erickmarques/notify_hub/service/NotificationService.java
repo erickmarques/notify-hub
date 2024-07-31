@@ -2,10 +2,8 @@ package com.erickmarques.notify_hub.service;
 
 import com.erickmarques.notify_hub.controller.dto.NotificationCreateDto;
 import com.erickmarques.notify_hub.controller.dto.NotificationResponseDto;
-import com.erickmarques.notify_hub.entity.Channel;
 import com.erickmarques.notify_hub.entity.Notification;
 import com.erickmarques.notify_hub.entity.Status;
-import com.erickmarques.notify_hub.repository.ChannelRepository;
 import com.erickmarques.notify_hub.repository.NotificationRepository;
 import com.erickmarques.notify_hub.service.strategy.*;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +71,7 @@ public class NotificationService {
 
     public void notify(Notification notification) {
 
-        Status status = null;
+        Status status;
         try {
             logger.info("Enviando para plataforma {}", notification.getChannel().getDescription());
 
