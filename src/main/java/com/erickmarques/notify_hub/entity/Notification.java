@@ -18,7 +18,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@Builder
 public class Notification {
 
     @Id

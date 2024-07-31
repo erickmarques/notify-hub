@@ -12,6 +12,6 @@ import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
 
-    @Query("SELECT n FROM Notification n WHERE n.status IN :status AND n.dateTime < :now")
+    @Query("SELECT n FROM Notification n WHERE n.status IN :status AND n.dateTime <= :now")
     List<Notification> findByStatusInAndDateTimeBeforeNow(@Param("status") List<Status> status, @Param("now") LocalDateTime now);
 }
