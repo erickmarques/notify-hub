@@ -65,15 +65,14 @@ public class NotificationService {
     }
 
     private List<Channel> findAllChannels(){
-        var allChannels =  channelRepository.findAll();
+        return channelRepository.findAll();
+    }
+
+    private String concatenateChannels(List<Channel> allChannels){
 
         if (allChannels.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "É preciso cadastrar os canais disponíveis!");
 
-        return allChannels;
-    }
-
-    private String concatenateChannels(List<Channel> allChannels){
         return allChannels
                 .stream()
                 .map(Channel::getDescription)
