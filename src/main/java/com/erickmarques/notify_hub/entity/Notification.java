@@ -1,9 +1,10 @@
 package com.erickmarques.notify_hub.entity;
 
+import com.erickmarques.notify_hub.controller.dto.NotificationResponseDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class Notification {
     private UUID id;
 
     @Column(name = "date_time")
+    @CreatedDate
     private LocalDateTime dateTime;
 
     private String destination;
