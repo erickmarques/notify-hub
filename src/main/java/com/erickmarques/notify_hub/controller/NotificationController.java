@@ -1,5 +1,7 @@
-package com.erickmarques.notify_hub.controller.dto;
+package com.erickmarques.notify_hub.controller;
 
+import com.erickmarques.notify_hub.controller.dto.CreateNotificationDto;
+import com.erickmarques.notify_hub.controller.dto.NotificationResponseDto;
 import com.erickmarques.notify_hub.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
