@@ -64,6 +64,7 @@ public class NotificationService {
         }
     }
 
+    @Transactional(readOnly = true)
     private List<Channel> findAllChannels(){
         return channelRepository.findAll();
     }
