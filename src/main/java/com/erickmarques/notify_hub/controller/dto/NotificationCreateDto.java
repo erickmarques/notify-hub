@@ -5,9 +5,9 @@ import com.erickmarques.notify_hub.entity.Notification;
 import com.erickmarques.notify_hub.entity.Status;
 
 
-public record CreateNotificationDto (String destination,
-                                     String message,
-                                     String channel){
+public record NotificationCreateDto(String destination,
+                                    String message,
+                                    String channel){
 
     public Notification toNotification(Channel channel) {
         return Notification

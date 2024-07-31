@@ -1,14 +1,12 @@
 package com.erickmarques.notify_hub.controller;
 
-import com.erickmarques.notify_hub.controller.dto.CreateNotificationDto;
+import com.erickmarques.notify_hub.controller.dto.NotificationCreateDto;
 import com.erickmarques.notify_hub.controller.dto.NotificationResponseDto;
 import com.erickmarques.notify_hub.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -18,8 +16,8 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody CreateNotificationDto createNotificationDto) {
-        var id = notificationService.create(createNotificationDto);
+    public ResponseEntity<String> create(@RequestBody NotificationCreateDto notificationCreateDto) {
+        var id = notificationService.create(notificationCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 

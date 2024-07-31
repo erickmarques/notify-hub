@@ -1,6 +1,6 @@
 package com.erickmarques.notify_hub.service;
 
-import com.erickmarques.notify_hub.controller.dto.CreateNotificationDto;
+import com.erickmarques.notify_hub.controller.dto.NotificationCreateDto;
 import com.erickmarques.notify_hub.controller.dto.NotificationResponseDto;
 import com.erickmarques.notify_hub.entity.Channel;
 import com.erickmarques.notify_hub.repository.ChannelRepository;
@@ -23,9 +23,9 @@ public class NotificationService {
     private final ChannelRepository channelRepository;
 
     @Transactional
-    public String create(CreateNotificationDto createNotificationDto){
-        var channel = getChannel(createNotificationDto.channel());
-        var notification = notificationRepository.save(createNotificationDto.toNotification(channel));
+    public String create(NotificationCreateDto NotificationcreateDto){
+        var channel = getChannel(NotificationcreateDto.channel());
+        var notification = notificationRepository.save(NotificationcreateDto.toNotification(channel));
         return notification.getId().toString();
     }
 
