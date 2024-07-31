@@ -2,6 +2,7 @@ package com.erickmarques.notify_hub.repository;
 
 import com.erickmarques.notify_hub.entity.Channel;
 import com.erickmarques.notify_hub.factory.ChannelFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,17 +20,23 @@ class ChannelRepositoryTest {
     @Autowired
     private ChannelRepository channelRepository;
 
+    @BeforeEach
+    void setUp() {
+        // Arrange
+        channelRepository.saveAll(ChannelFactory.createListChannelDefault());
+    }
+
     @Test
     void shouldReturnChannel_WhenFindByDescription() {
 
         // Arrange
-        var channel = channelRepository.save(ChannelFactory.createChannelDefault());
+        var description = ChannelFactory.DESCRIPTION;
 
         // Act
-        var result = channelRepository.findByDescription(ChannelFactory.DESCRIPTION);
+        var result = channelRepository.findByDescription(description);
 
         // Assert
         assertThat(result.get().getId()).isNotNull();
-        assertThat(result.get().getDescription()).isEqualTo(ChannelFactory.DESCRIPTION);
+        assertThat(result.get().getDescription()).isEqualTo(description);
     }
 }
