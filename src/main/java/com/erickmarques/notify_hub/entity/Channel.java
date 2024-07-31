@@ -12,4 +12,6 @@ public class Channel {
     @Id
     private Long id;
     private String description;
+
+    public Channel(){}
 }

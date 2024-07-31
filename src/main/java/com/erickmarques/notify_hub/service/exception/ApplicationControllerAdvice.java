@@ -2,6 +2,7 @@ package com.erickmarques.notify_hub.service.exception;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,8 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,23 +30,13 @@ public class ApplicationControllerAdvice {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
 
-        return ApiErrors
-                .builder()
-                .timestamp(LocalDateTime.now().toString())
-                .path(request.getRequestURI())
-                .errors(errors)
-                .build();
+        return new ApiErrors(LocalDateTime.now().toString(), request.getRequestURI(), errors);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiErrors> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request){
-        ApiErrors apiErrors = ApiErrors
-                                .builder()
-                                .timestamp(LocalDateTime.now().toString())
-                                .path(request.getRequestURI())
-                                .errors(Collections.singletonList(ex.getReason()))
-                                .build();
-
-        return new ResponseEntity<>(apiErrors, ex.getStatusCode());
+        HttpStatusCode codigoStatus = ex.getStatusCode();
+        ApiErrors apiErrors = new ApiErrors(LocalDateTime.now().toString(), request.getRequestURI(), ex.getReason());
+        return new ResponseEntity<>(apiErrors, codigoStatus);
     }
 }
