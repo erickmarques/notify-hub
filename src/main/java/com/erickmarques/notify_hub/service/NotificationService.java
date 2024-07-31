@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class NotificationService {
 
     @Transactional
     public String create(CreateNotificationDto createNotificationDto){
-        var channel = getChanell(createNotificationDto.channel());
+        var channel = getChannell(createNotificationDto.channel());
         var notification = notificationRepository.save(createNotificationDto.toNotification(channel));
         return notification.getId().toString();
     }
@@ -48,10 +49,24 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    private Channel getChanell(String description){
-        return channelRepository
-                .findByDescription(description)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,  "O canal informado não existe!"));
+    private Channel getChannell(String description){
+        var optinalChannel = channelRepository.findByDescription(description);
+
+        if (optinalChannel.isPresent()){
+            return optinalChannel.get();
+        } else {
+            var allChannels = channelRepository.findAll();
+
+            if (allChannels.isEmpty())
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "É preciso cadastrar os canais disponíveis!");
+
+            var validChannels = allChannels
+                                    .stream()
+                                    .map(Channel::getDescription)
+                                    .collect(Collectors.joining(", "));
+
+            var errorMessage = String.format("O canal informado não existe! Os Canais disponíveis são (%s)", validChannels);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+        }
     }
 }
