@@ -16,14 +16,14 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    public UUID create(CreateNotificationDto createNotificationDto){
+    public String create(CreateNotificationDto createNotificationDto){
         var notification = notificationRepository.save(createNotificationDto.toNotification());
-        return notification.getId();
+        return notification.getId().toString();
     }
 
-    public NotificationResponseDto findById(UUID id){
+    public NotificationResponseDto findById(String id){
         var notification =  notificationRepository
-                                .findById(id)
+                                .findById(UUID.fromString(id))
                                 .orElseThrow(() ->
                                         new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND,
