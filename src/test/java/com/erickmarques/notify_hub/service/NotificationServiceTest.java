@@ -36,12 +36,6 @@ class NotificationServiceTest {
     @Mock
     private ChannelService channelService;
 
-    @Mock
-    private Map<String, NotificationStrategy> mapStrategy;
-
-    @Mock
-    private NotificationStrategy emailNotificationStrategy;
-
     @InjectMocks
     private NotificationService notificationService;
 
