@@ -1,6 +1,7 @@
 package com.erickmarques.notify_hub.service;
 
 import com.erickmarques.notify_hub.entity.Notification;
+import com.erickmarques.notify_hub.entity.Status;
 import com.erickmarques.notify_hub.factory.ChannelFactory;
 import com.erickmarques.notify_hub.factory.Constants;
 import com.erickmarques.notify_hub.factory.NotificationCreateDtoFactory;
@@ -15,8 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -40,10 +43,11 @@ class NotificationServiceTest {
     @Nested
     class Create {
 
+        private static final String channelDescription = Constants.CHANNEL_DESCRIPTION;
+
         @Test
         void shouldCreateNotificationSuccessfully() {
             // Arrange
-            var channelDescription = Constants.CHANNEL_DESCRIPTION;
             var notificationCreateDto = NotificationCreateDtoFactory.createNotificationDtoDefault();
             var channel = ChannelFactory.createChannelDefault();
             var notification = NotificationFactory.createNotificationDefault(channel);
@@ -60,25 +64,24 @@ class NotificationServiceTest {
             verify(notificationRepository, times(1)).save(any(Notification.class));
 
         }
-    }
 
-    @Test
-    void shouldThrowException_WhenChannelNotFound() {
-        // Arrange
-        var channelDescription = Constants.CHANNEL_DESCRIPTION;
-        var notificationCreateDto = NotificationCreateDtoFactory.createNotificationDtoDefault();
+        @Test
+        void shouldThrowException_WhenChannelNotFound() {
+            // Arrange
+            var notificationCreateDto = NotificationCreateDtoFactory.createNotificationDtoDefault();
 
-        when(channelService.findByDescription(channelDescription)).thenReturn(Optional.empty());
+            when(channelService.findByDescription(channelDescription)).thenReturn(Optional.empty());
 
-        // Act
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> notificationService.create(notificationCreateDto));
+            // Act
+            ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                    () -> notificationService.create(notificationCreateDto));
 
-        // Assert
-        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        verify(channelService, times(1)).findByDescription(channelDescription);
-        verify(notificationRepository, never()).save(any(Notification.class));
+            // Assert
+            assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            verify(channelService, times(1)).findByDescription(channelDescription);
+            verify(notificationRepository, never()).save(any(Notification.class));
 
+        }
     }
 
     @Nested
@@ -130,6 +133,48 @@ class NotificationServiceTest {
             // Assert
             assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
             assertThat(exception.getReason()).isEqualTo("Favor informar um ID válido!");
+        }
+    }
+
+    @Nested
+    class CheckAndSend {
+
+        private static final List<Status> status = List.of(Status.SCHEDULED, Status.ERROR);
+        private static final LocalDateTime dateTime = LocalDateTime.now();
+
+        @Test
+        void shouldCheckAndSendNotificationsSuccessfully() {
+            // Arrange
+            var channel = ChannelFactory.createChannelDefault();
+            var notifications = NotificationFactory.createListNotificationDefault(channel);
+
+            when(notificationRepository.findByStatusInAndDateTimeBeforeNow(status, dateTime))
+                    .thenReturn(notifications);
+
+            // Act
+            notificationService.checkAndSend(dateTime);
+
+            // Assert
+            verify(notificationRepository, times(1))
+                    .findByStatusInAndDateTimeBeforeNow(anyList(), eq(dateTime));
+            notifications.forEach(notification -> {
+                verify(notificationRepository, times(1)).save(notification);
+            });
+        }
+
+        @Test
+        void shouldNotSendNotifications_WhenNoNotificationsFound() {
+            // Arrange
+            when(notificationRepository.findByStatusInAndDateTimeBeforeNow(anyList(), eq(dateTime)))
+                    .thenReturn(Collections.emptyList());
+
+            // Act
+            notificationService.checkAndSend(dateTime);
+
+            // Assert
+            verify(notificationRepository, times(1))
+                    .findByStatusInAndDateTimeBeforeNow(anyList(), eq(dateTime));
+            verify(notificationRepository, times(0)).save(any(Notification.class));
         }
     }
 }
