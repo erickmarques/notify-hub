@@ -4,20 +4,21 @@ package com.erickmarques.notify_hub.service;
 import com.erickmarques.notify_hub.factory.ChannelFactory;
 import com.erickmarques.notify_hub.factory.Constants;
 import com.erickmarques.notify_hub.repository.ChannelRepository;
-import org.apache.tomcat.util.bcel.Const;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Classe de teste para {@link ChannelService}.
@@ -93,6 +94,34 @@ class ChannelServiceTest {
             // Assert
             assertThat(emptyList).isEqualTo(result);
             assertThat(emptyList).hasSize(0);
+        }
+    }
+
+    @Nested
+    class ConcatenateChannels {
+
+        @Test
+        void shouldConcatenateChannelDescriptions() {
+            // Arrange
+            var channels = ChannelFactory.createListChannelDefault();
+
+            // Act
+            String result = channelService.concatenateChannels(channels);
+
+            // Assert
+            assertThat("EMAIL, WHATSAPP").isEqualTo(result);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenChannelsListIsEmpty() {
+            // Arrange & Act
+            ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+                channelService.concatenateChannels(Collections.emptyList());
+            });
+
+            // Assert
+            assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(exception.getReason()).isEqualTo("É preciso cadastrar os canais disponíveis!");
         }
     }
 }
