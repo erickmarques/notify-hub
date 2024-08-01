@@ -7,6 +7,7 @@ import com.erickmarques.notify_hub.factory.Constants;
 import com.erickmarques.notify_hub.factory.NotificationCreateDtoFactory;
 import com.erickmarques.notify_hub.factory.NotificationFactory;
 import com.erickmarques.notify_hub.repository.NotificationRepository;
+import com.erickmarques.notify_hub.service.strategy.*;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -36,6 +35,12 @@ class NotificationServiceTest {
 
     @Mock
     private ChannelService channelService;
+
+    @Mock
+    private Map<String, NotificationStrategy> mapStrategy;
+
+    @Mock
+    private NotificationStrategy emailNotificationStrategy;
 
     @InjectMocks
     private NotificationService notificationService;
@@ -175,6 +180,23 @@ class NotificationServiceTest {
             verify(notificationRepository, times(1))
                     .findByStatusInAndDateTimeBeforeNow(anyList(), eq(dateTime));
             verify(notificationRepository, times(0)).save(any(Notification.class));
+        }
+    }
+
+    @Nested
+    class Notify {
+
+        @Test
+        public void shouldNotifySuccessfully()  {
+            // Arrange
+            var channel = ChannelFactory.createChannelDefault();
+            var notification = NotificationFactory.createNotificationDefault(channel);
+
+            // Act
+            notificationService.notify(notification);
+
+            // Assert
+            verify(notificationRepository).save(notification);
         }
     }
 }
