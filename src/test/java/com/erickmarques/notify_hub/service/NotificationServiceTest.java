@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -78,5 +79,57 @@ class NotificationServiceTest {
         verify(channelService, times(1)).findByDescription(channelDescription);
         verify(notificationRepository, never()).save(any(Notification.class));
 
+    }
+
+    @Nested
+    class FindById {
+
+        @Test
+        void shouldReturnNotificationSuccessfully(){
+            // Arrange
+            var channel = ChannelFactory.createChannelDefault();
+            var notification = NotificationFactory.createNotificationDefault(channel);
+            when(notificationRepository.findById(notification.getId())).thenReturn(Optional.of(notification));
+
+            // Act
+            var result = notificationService.findById(notification.getId().toString());
+
+            // Assert
+            assertThat(result.id()).isEqualTo(notification.getId());
+            assertThat(result.destination()).isEqualTo(notification.getDestination());
+            assertThat(result.message()).isEqualTo(notification.getMessage());
+            assertThat(result.channel()).isEqualTo(notification.getChannel().getDescription());
+            assertThat(result.status()).isEqualTo(notification.getStatus().toString());
+        }
+
+        @Test
+        void shouldThrowException_WhenNotificationNotFound(){
+            // Arrange
+            var channel = ChannelFactory.createChannelDefault();
+            var notification = NotificationFactory.createNotificationDefault(channel);
+            when(notificationRepository.findById(notification.getId())).thenReturn(Optional.empty());
+
+            // Act
+            ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                    () -> notificationService.findById(notification.getId().toString()));
+
+            // Assert
+            assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(exception.getReason()).isEqualTo("Não existe notificação para o ID informado!");
+        }
+
+        @Test
+        void shouldThrowException_WhenInvalidId(){
+            // Arrange
+            String id = "ID_INVALID";
+
+            // Act
+            ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                    () -> notificationService.findById(id));
+
+            // Assert
+            assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(exception.getReason()).isEqualTo("Favor informar um ID válido!");
+        }
     }
 }
