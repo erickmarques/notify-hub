@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -62,4 +64,35 @@ class ChannelServiceTest {
         }
     }
 
+    @Nested
+    class FindAllChannels {
+
+        @Test
+        void shouldReturnAllChannels() {
+            // Arrange
+            var channels = ChannelFactory.createListChannelDefault();
+            when(channelRepository.findAll()).thenReturn(channels);
+
+            // Act
+            var result = channelService.findAllChannels();
+
+            // Assert
+            assertThat(channels).isEqualTo(result);
+            assertThat(channels).hasSize(2);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoChannels() {
+            // Arrange
+            var emptyList = Collections.emptyList();
+            when(channelRepository.findAll()).thenReturn(Collections.emptyList());
+
+            // Act
+            var result = channelService.findAllChannels();
+
+            // Assert
+            assertThat(emptyList).isEqualTo(result);
+            assertThat(emptyList).hasSize(0);
+        }
+    }
 }
