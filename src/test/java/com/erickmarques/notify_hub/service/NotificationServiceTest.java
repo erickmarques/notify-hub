@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -25,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Classe de teste para {@link NotificationService}.
  */
-@DisplayName("Testes do Service de Cliente")
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
     @Mock
@@ -57,9 +57,27 @@ class NotificationServiceTest {
             // Assert
             assertThat(result).isEqualTo(notification.getId().toString());
             verify(channelService, times(1)).findByDescription(channelDescription);
-            verify(channelService, times(1)).validateChannels(any());
             verify(notificationRepository, times(1)).save(any(Notification.class));
 
         }
+    }
+
+    @Test
+    void shouldThrowException_WhenChannelNotFound() {
+        // Arrange
+        var channelDescription = Constants.CHANNEL_DESCRIPTION;
+        var notificationCreateDto = NotificationCreateDtoFactory.createNotificationDtoDefault();
+
+        when(channelService.findByDescription(channelDescription)).thenReturn(Optional.empty());
+
+        // Act
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> notificationService.create(notificationCreateDto));
+
+        // Assert
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        verify(channelService, times(1)).findByDescription(channelDescription);
+        verify(notificationRepository, never()).save(any(Notification.class));
+
     }
 }

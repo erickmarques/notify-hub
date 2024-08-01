@@ -35,10 +35,16 @@ public class NotificationService {
 
     @Transactional
     public String create(NotificationCreateDto NotificationcreateDto){
-        var channel = channelService.findByDescription(NotificationcreateDto.channel());
-        channelService.validateChannels(channel);
 
-        var notification = notificationRepository.save(NotificationcreateDto.toNotification(channel.get()));
+        var channel = channelService.findByDescription(NotificationcreateDto.channel())
+                .orElseThrow(() -> {
+                    var allChannels = channelService.findAllChannels();
+                    var validChannels = channelService.concatenateChannels(allChannels);
+                    var errorMessage = String.format("O canal informado não existe! Os Canais disponíveis são (%s)", validChannels);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+                });
+
+        var notification = notificationRepository.save(NotificationcreateDto.toNotification(channel));
         return notification.getId().toString();
     }
 

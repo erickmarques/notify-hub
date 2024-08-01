@@ -23,22 +23,12 @@ public class ChannelService {
         return channelRepository.findByDescription(description);
     }
 
-    public void validateChannels(Optional<Channel> channel) {
-        if (channel.isEmpty()){
-            var allChannels = findAllChannels();
-            var validChannels = concatenateChannels(allChannels);
-            var errorMessage = String.format("O canal informado não existe! Os Canais disponíveis são (%s)", validChannels);
-
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
-        }
-    }
-
     @Transactional(readOnly = true)
-    private List<Channel> findAllChannels(){
+    public List<Channel> findAllChannels(){
         return channelRepository.findAll();
     }
 
-    private String concatenateChannels(List<Channel> allChannels){
+    public String concatenateChannels(List<Channel> allChannels){
 
         if (allChannels.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "É preciso cadastrar os canais disponíveis!");
