@@ -7,6 +7,8 @@ import com.erickmarques.notify_hub.factory.Constants;
 import com.erickmarques.notify_hub.factory.NotificationCreateDtoFactory;
 import com.erickmarques.notify_hub.factory.NotificationFactory;
 import com.erickmarques.notify_hub.repository.NotificationRepository;
+import com.erickmarques.notify_hub.service.strategy.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -34,6 +37,18 @@ class NotificationServiceTest {
 
     @Mock
     private ChannelService channelService;
+
+    @Mock
+    private InstagramNotificationStrategy instagramNotificationStrategy;
+
+    @Mock
+    private EmailNotificationStrategy emailNotificationStrategy;
+
+    @Mock
+    private SMSNotificationStrategy smsNotificationStrategy;
+
+    @Mock
+    private WhatsappNotificationStrategy whatsappNotificationStrategy;
 
     @InjectMocks
     private NotificationService notificationService;
@@ -179,6 +194,18 @@ class NotificationServiceTest {
     @Nested
     class Notify {
 
+        @BeforeEach
+        void setUp() {
+            Map<String, NotificationStrategy> mapStrategy = Map.of(
+                    "INSTAGRAM", instagramNotificationStrategy,
+                    "EMAIL", emailNotificationStrategy,
+                    "SMS", smsNotificationStrategy,
+                    "WHATSAPP", whatsappNotificationStrategy
+            );
+
+            ReflectionTestUtils.setField(notificationService, "mapStrategy", mapStrategy);
+        }
+
         @Test
         public void shouldNotifySuccessfully()  {
             // Arrange
@@ -189,7 +216,26 @@ class NotificationServiceTest {
             notificationService.notify(notification);
 
             // Assert
+            verify(emailNotificationStrategy, times(1)).send(notification.getDestination(), notification.getMessage());
             verify(notificationRepository).save(notification);
+        }
+
+        @Test
+        void testNotifyError() {
+            // Arrange
+            var channel = ChannelFactory.createChannelDefault();
+            var notification = NotificationFactory.createNotificationDefault(channel);
+
+            doThrow(new RuntimeException("Falhar ao enviar!"))
+                    .when(emailNotificationStrategy).send(notification.getDestination(), notification.getMessage());
+
+            // Act
+            notificationService.notify(notification);
+
+            // Assert
+            verify(emailNotificationStrategy, times(1)).send(notification.getDestination(), notification.getMessage());
+            verify(notificationRepository, times(1)).save(notification);
+            assertThat(Status.ERROR).isEqualTo(notification.getStatus());
         }
     }
 }
