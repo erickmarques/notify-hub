@@ -1,7 +1,7 @@
 package com.erickmarques.notify_hub.controller;
 
-import com.erickmarques.notify_hub.controller.dto.NotificationCreateDto;
 import com.erickmarques.notify_hub.factory.NotificationCreateDtoFactory;
+import com.erickmarques.notify_hub.factory.NotificationResponseDtoFactory;
 import com.erickmarques.notify_hub.service.NotificationService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +46,44 @@ class NotificationControllerTest {
             assertThat(HttpStatus.CREATED).isEqualTo(response.getStatusCode());
             assertThat(notificationId).isEqualTo(response.getBody());
             verify(notificationService).create(notificationCreateDto);
+        }
+    }
+
+    @Nested
+    class GetNotification {
+
+        @Test
+        void shouldReturnNotificationSuccessfully() {
+            // Arrange
+            var notificationResponseDto = NotificationResponseDtoFactory.createNotificationResponseDefault();
+            var id = notificationResponseDto.id().toString();
+
+            when(notificationService.findById(anyString())).thenReturn(notificationResponseDto);
+
+            // Act
+            var response = notificationController.getNotification(id);
+
+            // Assert
+            assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
+            assertThat(notificationResponseDto).isEqualTo(response.getBody());
+            verify(notificationService).findById(id);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNotificationNotFound() {
+            // Arrange
+            var notificationId = "ID_NOT_FOUND";
+            var msgException = "Não existe notificação para o ID informado!";
+            when(notificationService.findById(notificationId)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, msgException));
+
+            // Act & Assert
+            ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+                notificationController.getNotification(notificationId);
+            });
+
+            assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(exception.getReason()).isEqualTo(msgException);
+            verify(notificationService).findById(notificationId);
         }
     }
 }
