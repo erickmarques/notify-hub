@@ -52,11 +52,8 @@ public class NotificationCreateDtoTest {
         @Test
         void shouldNotValidateWhenDestinationIsBlank() {
             // Arrange
-            NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
-                                                            .destination("")
-                                                            .message("TESTE MENSAGEM!")
-                                                            .channel("EMAIL")
-                                                            .build();
+            NotificationCreateDto notificationCreateDto = NotificationCreateDtoFactory
+                                                            .createNotificationDtoWithDestinationIsBlank();
 
             // Act
             Set<ConstraintViolation<NotificationCreateDto>> violations = validator.validate(notificationCreateDto);
@@ -70,11 +67,8 @@ public class NotificationCreateDtoTest {
         @Test
         void shouldNotValidateWhenMessageIsBlank() {
             // Arrange
-            NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
-                                                            .destination("TESTE DESTINATION!")
-                                                            .message("")
-                                                            .channel("EMAIL")
-                                                            .build();
+            NotificationCreateDto notificationCreateDto = NotificationCreateDtoFactory
+                                                            .createNotificationDtoWithMessageIsBlank();
 
             // Act
             Set<ConstraintViolation<NotificationCreateDto>> violations = validator.validate(notificationCreateDto);
@@ -88,11 +82,8 @@ public class NotificationCreateDtoTest {
         @Test
         void shouldNotValidateWhenChannelIsBlank() {
             // Arrange
-            NotificationCreateDto notificationCreateDto = NotificationCreateDto.builder()
-                                                            .destination("TESTE DESTINATION!")
-                                                            .message("TESTE DESTINATION!")
-                                                            .channel("")
-                                                            .build();
+            NotificationCreateDto notificationCreateDto = NotificationCreateDtoFactory
+                                                            .createNotificationDtoWithChannelIsBlank();
 
             // Act
             Set<ConstraintViolation<NotificationCreateDto>> violations = validator.validate(notificationCreateDto);
