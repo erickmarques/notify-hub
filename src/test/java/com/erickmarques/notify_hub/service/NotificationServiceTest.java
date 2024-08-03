@@ -137,7 +137,7 @@ class NotificationServiceTest {
         @Test
         void shouldThrowException_WhenInvalidId(){
             // Arrange
-            String id = "ID_INVALID";
+            var id = "ID_INVALID";
 
             // Act
             ResponseStatusException exception = assertThrows(ResponseStatusException.class,
