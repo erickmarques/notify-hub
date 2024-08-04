@@ -1,6 +1,5 @@
 package com.erickmarques.notify_hub.service.exception;
 
-import com.erickmarques.notify_hub.service.ChannelService;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
