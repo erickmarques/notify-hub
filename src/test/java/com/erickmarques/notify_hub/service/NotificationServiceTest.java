@@ -221,7 +221,7 @@ class NotificationServiceTest {
         }
 
         @Test
-        void testNotifyError() {
+        void shouldSetStatusToErrorWhenNotificationSendingFails() {
             // Arrange
             var channel = ChannelFactory.createChannelDefault();
             var notification = NotificationFactory.createNotificationDefault(channel);
