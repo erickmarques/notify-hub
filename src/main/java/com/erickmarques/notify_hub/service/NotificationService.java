@@ -45,6 +45,8 @@ public class NotificationService {
                 });
 
         var notification = notificationRepository.save(NotificationcreateDto.toNotification(channel));
+
+        logger.info("Salvando a notificação {}", notification.toString());
         return notification.getId().toString();
     }
 
@@ -69,6 +71,9 @@ public class NotificationService {
     }
 
     public void checkAndSend(LocalDateTime dateTime) {
+
+        logger.info("verificando se existe notificação...");
+
         var status = List.of(Status.SCHEDULED, Status.ERROR);
         var notifications = notificationRepository.findByStatusInAndDateTimeBeforeNow(status, dateTime);
 
