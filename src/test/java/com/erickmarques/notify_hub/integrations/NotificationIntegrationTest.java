@@ -2,7 +2,7 @@ package com.erickmarques.notify_hub.integrations;
 
 import com.erickmarques.notify_hub.factory.NotificationCreateDtoFactory;
 import com.erickmarques.notify_hub.factory.NotificationResponseDtoFactory;
-import com.erickmarques.notify_hub.service.NotificationService;
+import com.erickmarques.notify_hub.service.NotificationServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ public class NotificationIntegrationTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationServiceImpl;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -44,7 +44,7 @@ public class NotificationIntegrationTest {
             var notificationCreateDto = NotificationCreateDtoFactory.createNotificationDtoDefault();
             var notificationId = "12345";
 
-            when(notificationService.create(notificationCreateDto)).thenReturn(notificationId);
+            when(notificationServiceImpl.create(notificationCreateDto)).thenReturn(notificationId);
 
             // Act & Assert
             mockMvc.perform(post(BASE_URL)
@@ -98,7 +98,7 @@ public class NotificationIntegrationTest {
         void shouldReturnNotification_WhenNotificationExists() throws Exception {
             // Arrange
             var notificationResponseDto = NotificationResponseDtoFactory.createNotificationResponseDefault();
-            when(notificationService.findById(notificationResponseDto.id().toString())).thenReturn(notificationResponseDto);
+            when(notificationServiceImpl.findById(notificationResponseDto.id().toString())).thenReturn(notificationResponseDto);
 
             // Act & Assert
             mockMvc.perform(get("/api/notifications/{id}", notificationResponseDto.id())
@@ -111,7 +111,7 @@ public class NotificationIntegrationTest {
         void shouldReturnNotFoundWhenNotificationDoesNotExist() throws Exception {
             // Arrange
             var id = "ID_INVALID";
-            when(notificationService.findById(anyString())).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
+            when(notificationServiceImpl.findById(anyString())).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
 
             // Act & Assert
             mockMvc.perform(get("/api/notifications/{id}", id)

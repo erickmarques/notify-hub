@@ -1,6 +1,6 @@
 package com.erickmarques.notify_hub.scheduler;
 
-import com.erickmarques.notify_hub.service.NotificationService;
+import com.erickmarques.notify_hub.service.NotificationSendNotificationImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,12 +15,12 @@ import java.util.concurrent.TimeUnit;
 public class NotificationScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationScheduler.class);
-    private final NotificationService notificationService;
+    private final NotificationSendNotificationImpl notificationSendNotificationImpl;
 
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.MINUTES)
     public void checkNotifications() {
         var dateTime = LocalDateTime.now();
         logger.info("Iniciando pesquisa de notificações em {}", dateTime);
-        notificationService.checkAndSend(dateTime);
+        notificationSendNotificationImpl.checkAndSend(dateTime);
     }
 }

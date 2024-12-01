@@ -1,7 +1,7 @@
 package com.erickmarques.notify_hub.listener;
 
 import com.erickmarques.notify_hub.controller.dto.NotificationCreateDto;
-import com.erickmarques.notify_hub.service.NotificationService;
+import com.erickmarques.notify_hub.service.NotificationServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotificationListener {
 
-    private final NotificationService notificationService;
+    private final NotificationServiceImpl notificationServiceImpl;
     private final ObjectMapper mapper;
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationListener.class);
@@ -28,7 +28,7 @@ public class NotificationListener {
 
             logger.info("recebendo mensagem da fila {}", dados.toString());
 
-            notificationService.create(dados);
+            notificationServiceImpl.create(dados);
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

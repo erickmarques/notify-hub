@@ -21,16 +21,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Classe de teste para {@link ChannelService}.
+ * Classe de teste para {@link ChannelServiceImpl}.
  */
 @ExtendWith(MockitoExtension.class)
-class ChannelServiceTest {
+class ChannelServiceImplTest {
 
     @Mock
     private ChannelRepository channelRepository;
 
     @InjectMocks
-    private ChannelService channelService;
+    private ChannelServiceImpl channelService;
 
     @Nested
     class FindByDescription {

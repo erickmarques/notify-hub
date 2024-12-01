@@ -3,7 +3,7 @@ package com.erickmarques.notify_hub.scheduler;
 import static org.mockito.Mockito.verify;
 
 
-import com.erickmarques.notify_hub.service.NotificationService;
+import com.erickmarques.notify_hub.service.NotificationSendNotificationImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 class NotificationSchedulerTest {
 
     @Mock
-    private NotificationService notificationService;
+    private NotificationSendNotificationImpl notificationSendNotificationImpl;
 
     @InjectMocks
     private NotificationScheduler notificationScheduler;
@@ -30,6 +30,6 @@ class NotificationSchedulerTest {
         notificationScheduler.checkNotifications();
 
         // Assert
-        verify(notificationService).checkAndSend(now);
+        verify(notificationSendNotificationImpl).checkAndSend(now);
     }
 }

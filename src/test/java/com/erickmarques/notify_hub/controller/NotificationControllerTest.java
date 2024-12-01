@@ -2,7 +2,7 @@ package com.erickmarques.notify_hub.controller;
 
 import com.erickmarques.notify_hub.factory.NotificationCreateDtoFactory;
 import com.erickmarques.notify_hub.factory.NotificationResponseDtoFactory;
-import com.erickmarques.notify_hub.service.NotificationService;
+import com.erickmarques.notify_hub.service.NotificationServiceImpl;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import java.util.UUID;
 class NotificationControllerTest {
 
     @Mock
-    private NotificationService notificationService;
+    private NotificationServiceImpl notificationServiceImpl;
 
     @InjectMocks
     private NotificationController notificationController;
@@ -37,7 +37,7 @@ class NotificationControllerTest {
             // Arrange
             var notificationCreateDto = NotificationCreateDtoFactory.createNotificationDtoDefault();
             var notificationId = UUID.randomUUID().toString();
-            when(notificationService.create(notificationCreateDto)).thenReturn(notificationId);
+            when(notificationServiceImpl.create(notificationCreateDto)).thenReturn(notificationId);
 
             // Act
             ResponseEntity<String> response = notificationController.create(notificationCreateDto);
@@ -45,7 +45,7 @@ class NotificationControllerTest {
             // Assert
             assertThat(HttpStatus.CREATED).isEqualTo(response.getStatusCode());
             assertThat(notificationId).isEqualTo(response.getBody());
-            verify(notificationService).create(notificationCreateDto);
+            verify(notificationServiceImpl).create(notificationCreateDto);
         }
     }
 
@@ -58,7 +58,7 @@ class NotificationControllerTest {
             var notificationResponseDto = NotificationResponseDtoFactory.createNotificationResponseDefault();
             var id = notificationResponseDto.id().toString();
 
-            when(notificationService.findById(anyString())).thenReturn(notificationResponseDto);
+            when(notificationServiceImpl.findById(anyString())).thenReturn(notificationResponseDto);
 
             // Act
             var response = notificationController.getNotification(id);
@@ -66,7 +66,7 @@ class NotificationControllerTest {
             // Assert
             assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
             assertThat(notificationResponseDto).isEqualTo(response.getBody());
-            verify(notificationService).findById(id);
+            verify(notificationServiceImpl).findById(id);
         }
 
         @Test
@@ -74,7 +74,7 @@ class NotificationControllerTest {
             // Arrange
             var notificationId = "ID_NOT_FOUND";
             var msgException = "Não existe notificação para o ID informado!";
-            when(notificationService.findById(notificationId)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, msgException));
+            when(notificationServiceImpl.findById(notificationId)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, msgException));
 
             // Act & Assert
             ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
@@ -83,7 +83,7 @@ class NotificationControllerTest {
 
             assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
             assertThat(exception.getReason()).isEqualTo(msgException);
-            verify(notificationService).findById(notificationId);
+            verify(notificationServiceImpl).findById(notificationId);
         }
     }
 }
